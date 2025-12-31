@@ -88,6 +88,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
   <script>
+    console.log('Initializing Firebase');
     const firebaseConfig = {
       apiKey: "AIzaSyCzw_cPd6LbkZi-nY6egy0zvliXZJpeW5A",
       authDomain: "resolution-tracker-bfff2.firebaseapp.com",
@@ -98,8 +99,10 @@
       measurementId: "G-RLK6QG3YQL"
     };
     firebase.initializeApp(firebaseConfig);
+    console.log('Firebase initialized');
     const db = firebase.firestore();
     window.db = db;
+    console.log('db set', db);
   </script>
   <script src="app.js"></script>
 </body>
