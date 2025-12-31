@@ -19,7 +19,7 @@ let currentPeriod = 'monthly';
 async function save() {
   try {
     console.log('Saving to Firebase:', state);
-    await setDoc(doc(db, 'users', 'user1'), state);
+    await db.collection('users').doc('user1').set(state);
     console.log('Saved to Firebase');
   } catch (e) {
     console.error('Save failed', e);
@@ -30,10 +30,9 @@ async function save() {
 async function load() {
   try {
     console.log('Loading from Firebase');
-    const docRef = doc(db, 'users', 'user1');
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      state = docSnap.data();
+    const doc = await db.collection('users').doc('user1').get();
+    if (doc.exists) {
+      state = doc.data();
       console.log('Loaded from Firebase:', state);
     } else {
       console.log('No data in Firebase, using default');
