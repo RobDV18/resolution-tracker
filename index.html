@@ -64,7 +64,9 @@
       <div id="resolutions-view" class="view hidden">
         <div id="resolutions-list"></div>
       </div>
-      <div id="stats-view" class="view hidden"></div>
+      <div id="stats-view" class="view hidden">
+        <div id="stats-content"></div>
+      </div>
       <div id="calendar-view" class="view hidden">
         <div class="calendar-controls">
           <button data-period="weekly">Weekly</button>
@@ -83,6 +85,22 @@
     </nav>
   </main>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyCzw_cPd6LbkZi-nY6egy0zvliXZJpeW5A",
+      authDomain: "resolution-tracker-bfff2.firebaseapp.com",
+      projectId: "resolution-tracker-bfff2",
+      storageBucket: "resolution-tracker-bfff2.firebasestorage.app",
+      messagingSenderId: "818926679412",
+      appId: "1:818926679412:web:23ae04a03e64d450f56821",
+      measurementId: "G-RLK6QG3YQL"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.db = db;
+  </script>
   <script src="app.js"></script>
 </body>
 </html>

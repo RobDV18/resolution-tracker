@@ -13,16 +13,37 @@ const defaultData = {
   settings: { lastOpened: null }
 };
 
-let state = load() || defaultData;
+let state = defaultData;
 let currentPeriod = 'monthly';
 
-function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-
-function load() {
+async function save() {
   try {
+    console.log('Saving to Firebase:', state);
+    await setDoc(doc(db, 'users', 'user1'), state);
+    console.log('Saved to Firebase');
+  } catch (e) {
+    console.error('Save failed', e);
+  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); // backup
+}
+
+async function load() {
+  try {
+    console.log('Loading from Firebase');
+    const docRef = doc(db, 'users', 'user1');
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      state = docSnap.data();
+      console.log('Loaded from Firebase:', state);
+    } else {
+      console.log('No data in Firebase, using default');
+    }
+  } catch (e) {
+    console.error('Load failed', e);
+    // fallback to localStorage
     const json = localStorage.getItem(STORAGE_KEY);
-    return json ? JSON.parse(json) : null;
-  } catch (e) { return null; }
+    if (json) state = JSON.parse(json);
+  }
 }
 
 /* DOM*/
@@ -48,7 +69,8 @@ const activityHours = document.getElementById('activityHours');
 const activityMinutes = document.getElementById('activityMinutes');
 
 function renderStats(){
-  statsView.innerHTML = '';
+  const content = document.getElementById('stats-content');
+  content.innerHTML = '';
   const wrapper = document.createElement('div');
   state.resolutions.forEach(r => {
     const el = document.createElement('div');
@@ -75,17 +97,18 @@ function renderStats(){
   Total Activities: ${totalActivities}<br>
   Total Time Spent: ${totalHours}h ${totalMins}m`;
   wrapper.appendChild(overall);
-  statsView.appendChild(wrapper);
+  content.appendChild(wrapper);
 }
 
 function init() {
   selectTab('landing');
-  renderResolutions();
-  renderStats();
-  renderCalendar('monthly', new Date());
-
   bind();
   tryRegisterSW();
+  load().then(() => {
+    renderResolutions();
+    renderStats();
+    renderCalendar('monthly', new Date());
+  });
 }
 function bind() {
   document.querySelectorAll('.bottom-nav button').forEach(btn => {
@@ -167,7 +190,7 @@ function onAddResolutionSubmit(e){
   const emoji = prompt('Emoji (like 🎨) — leave blank for default','🎯') || '🎯';
   const id = name.toLowerCase().replace(/\s+/g,'_') + '_' + Math.floor(Math.random()*1000);
   state.resolutions.push({id, name, color, emoji});
-  save();
+  save().catch(e => console.error('Save failed', e));
   resolutionTitle.value = '';
   renderLanding();
   renderResolutions();
@@ -186,7 +209,7 @@ function onLogActivitySubmit(e){
     minutes: Number(activityMinutes.value || 0)
   };
   state.activities.push(a);
-  save();
+  save().catch(e => console.error('Save failed', e));
   activityNotes.value = '';
   activityHours.value = '';
   activityMinutes.value = '';
@@ -222,7 +245,7 @@ function renderResolutions(){
       const color = prompt('New hex color', r.color);
       if(color) {
         r.color = color;
-        save();
+        save().catch(e => console.error('Save failed', e));
         renderResolutions();
         renderCalendar('monthly', new Date());
       }
@@ -235,7 +258,7 @@ function renderResolutions(){
       const emoji = prompt('New emoji', r.emoji);
       if(emoji) {
         r.emoji = emoji;
-        save();
+        save().catch(e => console.error('Save failed', e));
         renderResolutions();
         renderCalendar('monthly', new Date());
       }
@@ -247,7 +270,7 @@ function renderResolutions(){
       if(confirm('Delete this resolution?')) {
         state.resolutions = state.resolutions.filter(x => x.id !== id);
         state.activities = state.activities.filter(a => a.resolutionId !== id);
-        save();
+        save().catch(e => console.error('Save failed', e));
         renderLanding();
         renderResolutions();
         renderStats();
@@ -303,7 +326,7 @@ function editOrRemoveActivity(id){
   } else if(choice === '2'){
     if(confirm('Remove this activity?')){
       state.activities = state.activities.filter(act => act.id !== id);
-      save();
+      save().catch(e => console.error('Save failed', e));
       renderCalendar(currentPeriod, new Date());
       renderStats();
     }
