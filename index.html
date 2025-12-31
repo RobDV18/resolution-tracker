@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Resolution Tracker</title>
+  <link rel="stylesheet" href="app.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0b1220" />
+</head>
+<body>
+  <main id="app">
+    <header class="topbar">
+      <h1>Resolution Tracker</h1>
+    </header>
+
+    <section id="view-container">
+      <div id="landing-view" class="view">
+        <div class="landing-options">
+          <button id="logResolutionBtn" class="primary large">Log Resolution</button>
+          <button id="logActivityBtn" class="primary large" disabled>Log Resolution Activity</button>
+        </div>
+      </div>
+      <div id="add-resolution-view" class="view hidden">
+        <form id="addResolutionForm">
+          <label>
+            Resolution Title
+            <input type="text" id="resolutionTitle" placeholder="e.g. Practise Drawing" required />
+          </label>
+          <div class="modal-actions">
+            <button type="button" id="cancelAddResolution" class="secondary">Cancel</button>
+            <button type="submit" class="primary">Save</button>
+          </div>
+        </form>
+      </div>
+      <div id="log-activity-view" class="view hidden">
+        <form id="logActivityForm">
+          <label>
+            Resolution
+            <select id="resolutionSelect" required></select>
+          </label>
+          <label>
+            Date
+            <input type="date" id="activityDate" required />
+          </label>
+          <label>
+            Notes
+            <textarea id="activityNotes" placeholder="optional notes"></textarea>
+          </label>
+
+          <label>
+            Time spent
+            <div style="display:flex;gap:8px">
+              <input type="number" id="activityHours" min="0" placeholder="Hours" />
+              <input type="number" id="activityMinutes" min="0" max="59" placeholder="Minutes" />
+            </div>
+          </label>
+          <div class="modal-actions">
+            <button type="button" id="cancelLogActivity" class="secondary">Cancel</button>
+            <button type="submit" class="primary">Save</button>
+          </div>
+        </form>
+      </div>
+      <div id="resolutions-view" class="view hidden">
+        <div id="resolutions-list"></div>
+      </div>
+      <div id="stats-view" class="view hidden"></div>
+      <div id="calendar-view" class="view hidden">
+        <div class="calendar-controls">
+          <button data-period="weekly">Weekly</button>
+          <button data-period="monthly" class="active">Monthly</button>
+          <button data-period="yearly">Yearly</button>
+        </div>
+        <div id="calendar-content"></div>
+      </div>
+    </section>
+
+    <nav class="bottom-nav">
+      <button data-tab="resolutions">Resolutions</button>
+      <button data-tab="stats">Stats</button>
+      <button data-tab="landing">Log</button>
+      <button data-tab="calendar">Calendar</button>
+    </nav>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
